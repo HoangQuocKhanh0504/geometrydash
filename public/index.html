@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Cộng đồng Geometry Dash</title>
+<link rel="icon" href="GD.png">
+<style>
+:root{
+  --bg:#f4f7fb;--text:#222;--card:#fff;--primary:#4a90e2;--secondary:#50e3c2;
+  --shadow:rgba(0,0,0,0.08);--font-size-base:16px;--font-size-title:1.8rem;--font-size-button:1rem;
+}
+body.dark{
+  --bg:#1e1e2e;--text:#f0f0f0;--card:#2c2c3c;--primary:#4a90e2;--secondary:#50e3c2;--shadow:rgba(0,0,0,0.5);
+}
+body{
+  font-family:'Poppins','Segoe UI',sans-serif;margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-size:var(--font-size-base);line-height:1.6;transition:background .3s,color .3s;
+}
+header{background:var(--primary);color:#fff;padding:20px 30px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom-left-radius:12px;border-bottom-right-radius:12px;box-shadow:0 2px 6px var(--shadow);}
+header h1{margin:0;font-weight:600;font-size:var(--font-size-title);}
+header button{background:var(--secondary);border:none;padding:10px 18px;border-radius:12px;cursor:pointer;color:#fff;font-weight:600;font-size:var(--font-size-button);}
+main{padding:30px 20px;}
+form{background:var(--card);padding:25px;margin:20px auto;width:100%;max-width:400px;border-radius:16px;box-shadow:0 8px 20px var(--shadow);display:flex;flex-direction:column;gap:12px;}
+form input,form button,form label{padding:12px;border-radius:12px;border:1px solid #ccc;font-size:var(--font-size-base);}
+form button{background:var(--primary);color:#fff;font-weight:600;cursor:pointer;}
+#requests{width:90%;max-width:1200px;margin:30px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+.card{background:var(--card);padding:20px;border-radius:16px;box-shadow:0 6px 18px var(--shadow);}
+.avatar{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:10px;}
+.request-header{display:flex;align-items:center;margin-bottom:10px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;margin-left:8px;font-weight:bold;}
+.tag.yes{background:#4caf50;color:#fff;}
+.tag.no{background:#f44336;color:#fff;}
+.vote-count{font-weight:bold;}
+/* Animation lắc lư */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-10deg); }
+  30% { transform: rotate(10deg); }
+  45% { transform: rotate(-10deg); }
+  60% { transform: rotate(10deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+.tag.yes {
+  animation: wiggle 1s infinite;
+}
+/* Animation lắc lư trái phải */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Chỉ áp dụng cho tag "no" */
+.tag.no {
+  display: inline-block; /* cần để animation hoạt động */
+  animation: shake 0.5s infinite;
+}
+.card {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-3px); }
+
+.request-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--primary);
+}
+
+/* Tách info để text gọn hơn */
+.request-info h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
+.request-info p { margin: 2px 0; font-size: 0.95rem; }
+
+.request-actions button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Comments */
+.comments { padding-left: 20px; margin: 10px 0 0 0; }
+.comments li { margin-bottom: 5px; }
+
+/* Tags */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.tag.yes { background: #4caf50; color: #fff; }
+.tag.no { background: #f44336; color: #fff; display: inline-block; animation: shake 0.5s infinite; }
+
+/* Lắc qua lại cho tag "no" */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* khoảng cách giữa avatar và chữ */
+}
+
+.avatar-label {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s;
+}
+.avatar-label:hover { border-color: var(--secondary); }
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  text-align: center;
+}
+    .request-info {
+  display: flex;
+  flex-direction: column; /* xếp theo cột, cho text tự xuống dòng */
+  gap: 4px; /* khoảng cách giữa các dòng */
+  word-break: break-word; /* ngắt chữ dài nếu cần */
+}
+
+</style>
+<div id="notification-bar" style="
+    width: 100%;
+    background-color: #ffcc00;
+    color: #000;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 2px solid #cc9900;
+    box-sizing: border-box;
+    position: relative;
+">
+  <div id="scrolling-wrapper" style="
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: scroll-infinite 30s linear infinite;
+  ">
+    <span style="padding-right: 50px;">
+      Cùng đặt thử thách cho  
+      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
+       với những map bạn biết nào
+    </span>
+    <span style="padding-right: 50px;">
+      Cùng đặt thử thách cho  
+      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
+       với những map bạn biết nào
+    </span>
+    <span style="padding-right: 50px;">
+      Cùng đặt thử thách cho  
+      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
+       với những map bạn biết nào
+    </span>
+    <span style="padding-right: 50px;">
+      Cùng đặt thử thách cho  
+      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
+       với những map bạn biết nào
+    </span>
+        <span style="padding-right: 50px;">
+      Cùng đặt thử thách cho  
+      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
+       với những map bạn biết nào
+    </span>
+  </div>
+</div>
+<style>
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Cộng đồng Geometry Dash KHANHGD</h1>
+<button id="toggleDark">🌙 Dark Mode</button>
+</header>
+
+<main>
+<form id="requestForm" enctype="multipart/form-data">
+<input type="text" name="name" placeholder="Tên map" required>
+<input type="text" name="mapId" placeholder="Map ID" required>
+<input type="text" name="ytLink" placeholder="Link YouTube" required>
+<div class="avatar-upload">
+  <label for="avatarInput" class="avatar-label">
+    <img id="avatarPreview" src="/default/default1.png" alt="Avatar" class="avatar-preview">
+  </label>
+  <span class="avatar-text">📷 Chọn hoặc kéo thả ảnh</span>
+  <input type="file" name="avatar" id="avatarInput" accept="image/*" hidden>
+</div>
+
+<label><input type="checkbox" name="tagTitle"> Tag tiêu đề</label>
+<button type="submit">✨ Gửi yêu cầu</button>
+</form>
+
+<section>
+<h2>📋 Danh sách yêu cầu</h2>
+<div id="requests"></div>
+<button class="refresh-btn" onclick="loadRequests()">🔄 Làm mới danh sách</button>
+
+<style>
+.refresh-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.refresh-btn:hover {
+  background-color: #357ab7;
+  transform: scale(1.05);
+}
+
+.refresh-btn:active {
+  transform: scale(0.97);
+}
+</style>
+
+</section>
+</main>
+
+<footer style="
+  background: #4a90e2;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+">
+  <p>✨ Geometry Dash Community - <span style="font-weight:bold;">KHANHPC</span></p>
+</footer>
+
+<script>
+const form=document.getElementById("requestForm");
+const requestsDiv=document.getElementById("requests");
+const toggleDark=document.getElementById("toggleDark");
+
+function loadRequests(){
+  fetch("/api/requests")
+    .then(r=>r.json())
+    .then(data=>{
+      requestsDiv.innerHTML="";
+      data.forEach(renderRequest);
+    });
+}
+
+function renderRequest(req) {
+  const card = document.createElement("div");
+  card.className = "card";
+
+  // Tag
+  const tagLabel = req.tagTitle
+    ? "<span class='tag yes'>🏷️ Tag</span>"
+    : "<span class='tag no'>❌ Không tag</span>";
+
+  // Avatar mặc định ngẫu nhiên từ 2 ảnh
+  const avatar = req.avatar || `/default/default${Math.floor(Math.random() * 2) + 1}.png`;
+
+  card.innerHTML = `
+    <div class="request-header">
+      <img src="${avatar}" class="avatar">
+      <div class="request-info">
+        <h3>${req.name} ${tagLabel}</h3>
+        <p><b>Map ID:</b> ${req.mapId}</p>
+        <div class="youtube-link">
+  <span>YouTube:</span>
+  <a href="${req.ytLink}" target="_blank">${req.ytLink}</a>
+</div>
+
+<style>
+.youtube-link {
+  background-color: #fff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: inline-block;
+  margin: 5px 0;
+  font-family: Arial, sans-serif;
+}
+
+.youtube-link span {
+  font-weight: bold;
+  margin-right: 6px;
+  color: #333;
+}
+
+.youtube-link a {
+  color: #e62117;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.youtube-link a:hover {
+  color: #b71c1c;
+  text-decoration: underline;
+}
+</style>
+
+      </div>
+    </div>
+    <div class="request-actions">
+      <button onclick="vote(${req.id}, this)">👍 ${req.votes}</button>
+      <button onclick="deleteRequest(${req.id}, this)" style="background:#f44336;margin-left:10px;">🗑️ Xóa</button>
+    </div>
+    <ul class="comments">
+      ${req.comments.map(c => `<li>${c}</li>`).join("")}
+    </ul>
+    <div class="add-comment">
+      <input type="text" placeholder="Nhập bình luận..." id="commentInput-${req.id}">
+      <button onclick="addComment(${req.id})">💬 Gửi</button>
+    </div>
+    
+<style>
+.add-comment {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.add-comment input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.add-comment input:focus {
+  border-color: #4a90e2;
+}
+
+.add-comment button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-comment button:hover {
+  background-color: #357ab7;
+}
+</style>
+  `;
+  requestsDiv.appendChild(card);
+}
+
+// Hàm gửi comment
+function addComment(id) {
+  const input = document.getElementById(`commentInput-${id}`);
+  const text = input.value.trim();
+  if (!text) return alert("Nhập bình luận trước!");
+
+  fetch(`/api/comment/${id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      // Thêm comment ngay dưới card
+      const card = input.closest(".card");
+      const ul = card.querySelector(".comments");
+      const li = document.createElement("li");
+      li.textContent = text;
+      ul.appendChild(li);
+      input.value = "";
+    } else {
+      alert(res.error || "Lỗi khi gửi comment");
+    }
+  });
+}
+
+
+// Xóa request với mật khẩu + giới hạn 3 lần
+function deleteRequest(id, btn) {
+  const ipKey = `delete_fail_${id}`; // key lưu số lần sai theo request
+  let data = JSON.parse(localStorage.getItem(ipKey) || '{}');
+  const now = Date.now();
+
+  // Nếu đang khoá (lock đến 5 phút)
+  if (data.lockUntil && now < data.lockUntil) {
+    alert(`Bạn đã nhập sai quá 3 lần. Vui lòng chờ ${Math.ceil((data.lockUntil - now)/1000)} giây.`);
+    return;
+  }
+
+  const pass = prompt("Nhập mật khẩu để xóa thử thách:");
+  if (pass !== "khanhpc2008") {
+    alert("Sai mật khẩu!");
+    data.failCount = (data.failCount || 0) + 1;
+    if (data.failCount >= 3) {
+      data.lockUntil = now + 5 * 60 * 1000; // khoá 5 phút
+      alert("Bạn đã nhập sai 3 lần! IP bị khoá 5 phút.");
+    }
+    localStorage.setItem(ipKey, JSON.stringify(data));
+    return;
+  }
+
+  // Nếu đúng mật khẩu, reset LocalStorage
+  localStorage.removeItem(ipKey);
+
+  fetch("/api/delete/" + id, { method: "POST" })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success) {
+        btn.closest(".card").remove();
+        alert("Đã xóa thành công!");
+      } else {
+        alert(res.error || "Error khi xóa");
+      }
+    });
+}
+
+
+
+
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const formData=new FormData(form);
+  fetch("/api/requests", {method:"POST", body:formData})
+    .then(r=>r.json())
+    .then(req=>{
+      renderRequest(req);
+      form.reset();
+    });
+});
+
+function vote(id, btn){
+  fetch("/api/vote/"+id,{method:"POST"})
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.success){
+        // Lấy số vote hiện tại từ text của nút
+        const current = parseInt(btn.textContent.replace(/[^0-9]/g,'')) || 0;
+        btn.textContent = `👍 ${current + 1}`;
+      } else alert(res.error || 'Error');
+    });
+}
+
+
+// Dark mode
+if(localStorage.getItem("theme")==="dark"){document.body.classList.add("dark"); toggleDark.textContent="☀️ Light Mode";}
+toggleDark.addEventListener("click", ()=>{
+  const isDark=document.body.classList.toggle("dark");
+  localStorage.setItem("theme",isDark?"dark":"light");
+  toggleDark.textContent=isDark?"☀️ Light Mode":"🌙 Dark Mode";
+});
+
+// Load ban đầu
+loadRequests();
+// JS hiển thị preview khi chọn file
+const avatarInput = document.getElementById("avatarInput");
+const avatarPreview = document.getElementById("avatarPreview");
+
+avatarInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = evt => { avatarPreview.src = evt.target.result; };
+    reader.readAsDataURL(file);
+  }
+});
+
+</script>
+</body>
+</html>
