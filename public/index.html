@@ -185,28 +185,20 @@ form button{background:var(--primary);color:#fff;font-weight:600;cursor:pointer;
     <span style="padding-right: 50px;">
       Cùng đặt thử thách cho  
       <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
-       với những map bạn biết nào
+       với những map bạn biết nào(hiện tại web chỉ ở bản demo nên dữ liệu sẽ bị mất sau 15p các bạn thông cảm nhé vì mình dùng bản free nếu ai có điều kiện có thể donate cho mình ngay dưới nhé mình xin cảm ơn ạ)
     </span>
     <span style="padding-right: 50px;">
       Cùng đặt thử thách cho  
       <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
-       với những map bạn biết nào
+       với những map bạn biết nào(hiện tại web chỉ ở bản demo nên dữ liệu sẽ bị mất sau 15p các bạn thông cảm nhé vì mình dùng bản free nếu ai có điều kiện có thể donate cho mình ngay dưới nhé mình xin cảm ơn ạ)
     </span>
     <span style="padding-right: 50px;">
       Cùng đặt thử thách cho  
       <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
-       với những map bạn biết nào
+       với những map bạn biết nào(hiện tại web chỉ ở bản demo nên dữ liệu sẽ bị mất sau 15p các bạn thông cảm nhé vì mình dùng bản free nếu ai có điều kiện có thể donate cho mình ngay dưới nhé mình xin cảm ơn ạ)
     </span>
-    <span style="padding-right: 50px;">
-      Cùng đặt thử thách cho  
-      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
-       với những map bạn biết nào
-    </span>
-        <span style="padding-right: 50px;">
-      Cùng đặt thử thách cho  
-      <a href="https://www.youtube.com/channel/UC-a4cIDpKq6p1vo4lsomg4w?sub_confirmation=1" target="_blank" style="color: #000; text-decoration: underline;">khánhGD</a>
-       với những map bạn biết nào
-    </span>
+
+
   </div>
 </div>
 <style>
@@ -222,10 +214,59 @@ form button{background:var(--primary);color:#fff;font-weight:600;cursor:pointer;
 </head>
 <body>
 <header>
-<h1>Cộng đồng Geometry Dash KHANHGD</h1>
+<h1>Cộng đồng Geometry Dash KHANHGD<span id="donate-host"></span></h1>
 <button id="toggleDark">🌙 Dark Mode</button>
 </header>
+<script>
+const host = document.getElementById("donate-host");
+const shadow = host.attachShadow({ mode: "open" });
+const tpl = `
+<a href="https://khanhpc-five.vercel.app/ungho.html" id="donate-button" target="_blank">💖 Donate cho KHANHPC</a>
+<style>
+  #donate-button {
+    display: inline-block;
+    margin-left: 8px; /* sát bên chữ */
+    vertical-align: middle; /* căn giữa chữ với nút */
+    background: linear-gradient(135deg, #ff0080, #7928ca);
+    color: white;
+    padding: 4px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 20px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    animation: shake 2s infinite;
+    transition: transform 0.2s;
+  }
+  #donate-button:hover {
+    transform: scale(1.1);
+  }
+  @keyframes shake {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(3deg); }
+    40% { transform: rotate(-3deg); }
+    60% { transform: rotate(2deg); }
+    80% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+  }
+  @media (max-width: 500px) {
+    #donate-button {
+      font-size: 14px;
+      padding: 3px 10px;
+    }
+  }
+</style>
+`;
+shadow.innerHTML = tpl;
 
+// Nếu bị xóa thì reload
+new MutationObserver((muts, obs) => {
+  if (!shadow.querySelector("#donate-button")) {
+    obs.disconnect();
+    location.reload();
+  }
+}).observe(shadow, { childList: true });
+</script>
 <main>
 <form id="requestForm" enctype="multipart/form-data">
 <input type="text" name="name" placeholder="Tên map" required autocomplete="off">
